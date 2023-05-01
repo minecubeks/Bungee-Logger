@@ -15,7 +15,7 @@ import java.sql.SQLException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class Enable {
+class Enable(private val plugin: Plugin) {
     private var connection: Connection? = null
     fun onEnable(plugin: Plugin) {
         plugin.logger.info("Starting Bungee event Logger by XAP3X#8831")
@@ -26,14 +26,15 @@ class Enable {
         // Check if \plugins\logger exists
         try {
             if (!Files.exists(Paths.get("./plugins/Logger/"))) {
-                // Creating .\plugins\logger\ directory
+                // Creating .\plugins\logger\ directory and \logs
                 Files.createDirectories(Paths.get("./plugins/Logger"))
+                Files.createDirectories(Paths.get("./plugins/Logger/logs"))
             }
             val path = Paths.get("./plugins/Logger/startups.txt")
             if (!Files.exists(path)) {
                 Files.createFile(path)
             }
-            Files.write(path, "Started up at time: $datum".toByteArray(), StandardOpenOption.APPEND)
+            Files.write(path, "Started up at time: $datum\n".toByteArray(), StandardOpenOption.APPEND)
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -78,9 +79,9 @@ class Enable {
                     val resultSet = statement?.executeQuery("SELECT COUNT(*) AS table_exists FROM information_schema.tables WHERE table_name = 'proxy'")
                     //If not exist create and insert values
                     if (resultSet != null) {
-                        if (resultSet.next() && resultSet?.getInt("table_exists")!! <= 0) {
-                            statement?.execute("CREATE TABLE IF NOT EXISTS proxy (Last_Launch VARCHAR(45) PRIMARY KEY NOT NULL, Last_End VARCHAR(45) NOT NULL, status INT NOT NULL)")
-                            statement?.execute("INSERT INTO `proxy` (`Last_Launch`, `Last_End`, `status`) VALUES ('0000-00-00 00:00:00', '0000-00-00 00:00:00', 0)")
+                        if (resultSet.next() && resultSet.getInt("table_exists") <= 0) {
+                            statement.execute("CREATE TABLE IF NOT EXISTS proxy (Last_Launch VARCHAR(45) PRIMARY KEY NOT NULL, Last_End VARCHAR(45) NOT NULL, status INT NOT NULL)")
+                            statement.execute("INSERT INTO `proxy` (`Last_Launch`, `Last_End`, `status`) VALUES ('0000-00-00 00:00:00', '0000-00-00 00:00:00', 0)")
                         }
                     }
                     // Updating last launch

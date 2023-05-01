@@ -14,9 +14,8 @@ import java.sql.SQLException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class Disable {
+class Disable(private val plugin: Plugin) {
     private var connection: Connection? = null
-    @Throws(IOException::class)
     fun onDisable(plugin: Plugin) {
         plugin.logger.info("Disabling Bungee Logger")
         // Declaring date of startup
@@ -25,11 +24,11 @@ class Disable {
         val datum = currentDateTime.format(formatter)
         // Log server shutdown to file shutdowns.txt
         try {
-            val path = Paths.get("./plugins/Logger/shutdowns.txt")
+            val path = Paths.get("./plugins/Logger/logs/shutdowns.txt")
             if (!Files.exists(path)) {
                 Files.createFile(path)
             }
-            Files.write(path, "Shutdown at time: $datum".toByteArray(), StandardOpenOption.APPEND)
+            Files.write(path, "Shutdown at time: $datum\n".toByteArray(), StandardOpenOption.APPEND)
         } catch (e: IOException) {
             e.printStackTrace()
         }

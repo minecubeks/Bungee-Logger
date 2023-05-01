@@ -1,18 +1,18 @@
 package logger
 
 import net.md_5.bungee.api.plugin.Plugin
-import java.io.IOException
 
-class main : Plugin() {
+
+class Main : Plugin() {
     override fun onEnable() {
-        Enable().onEnable(this)
+        val chatEventListener = ChatEventListener(this)
+        proxy.pluginManager.registerListener(this, chatEventListener)
+        proxy.pluginManager.registerListener(this, ServerSwitchListener(this))
+        Enable(this).onEnable(this)
     }
 
     override fun onDisable() {
-        try {
-            Disable().onDisable(this)
-        } catch (e: IOException) {
-            throw RuntimeException(e)
-        }
+        Disable(this).onDisable(this)
     }
 }
+

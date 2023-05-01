@@ -1,4 +1,4 @@
 name: Logger
 version: '${project.version}'
-main: logger.main
+main: logger.Main
 description: Logging startup/shutdowns events to .txt file and MySQL DB.

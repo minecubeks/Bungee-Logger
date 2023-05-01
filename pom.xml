@@ -11,7 +11,7 @@
 
     <name>Logger</name>
 
-    <description>Logging events to .log file and MySQL DB.</description>
+    <description>Logging events to .txt files and MySQL DB.</description>
     <properties>
         <java.version>19</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

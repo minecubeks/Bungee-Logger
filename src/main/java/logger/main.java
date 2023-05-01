@@ -2,6 +2,8 @@ package logger;
 
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.io.IOException;
+
 public class main extends Plugin {
 
     @Override
@@ -11,6 +13,10 @@ public class main extends Plugin {
 
     @Override
     public void onDisable() {
-        new disable().onDisable(this);
+        try {
+            new disable().onDisable(this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

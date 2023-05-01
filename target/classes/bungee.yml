@@ -1,4 +1,4 @@
 name: Logger
 version: '1.0-SNAPSHOT'
 main: logger.main
-description: Logging events to .log file and MySQL DB.
+description: Logging startup/shutdowns events to .txt file and MySQL DB.

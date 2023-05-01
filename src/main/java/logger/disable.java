@@ -4,8 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,10 +16,25 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 public class disable {
     private Connection connection;
-    public void onDisable(Plugin plugin) {
-        plugin.getLogger().info("Disabling Bungge Logger");
+    public void onDisable(Plugin plugin) throws IOException {
+        plugin.getLogger().info("Disabling Bungee Logger");
+        // Declaring date of startup
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String datum = currentDateTime.format(formatter);
+        // Log server shutdown to file shutdowns.txt
+        try {
+            Path path = Paths.get("./plugins/Logger/shutdowns.txt");
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+            Files.write(path, ("Shutdown at time: " + datum).getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+             e.printStackTrace();
+        }
         try {
             JsonObject config;
             try {
@@ -43,9 +61,6 @@ public class disable {
                 plugin.getLogger().severe("Failed to load and read the config.json file, error: " + e.getMessage());
             }
             // Updating Last End
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String datum = currentDateTime.format(formatter);
 
             Statement statement = connection.createStatement();
             statement.execute(String.format("UPDATE `proxy` SET `Last_End` = '%s'", datum));

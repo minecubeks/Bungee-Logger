@@ -3,12 +3,13 @@ package logger;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,18 +22,34 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class enable {
     private Connection connection;
     public void onEnable(Plugin plugin) {
-        plugin.getLogger().info("Starting Bungge Logger by XAP3X#8831");
+        plugin.getLogger().info("Starting Bungee event Logger by XAP3X#8831");
+        // Declaring date of startup
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String datum = currentDateTime.format(formatter);
+        // Check if \plugins\logger exists
+        try {
+            if (!Files.exists(Paths.get("./plugins/Logger/"))) {
+                // Creating .\plugins\logger\ directory
+                Files.createDirectories(Paths.get("./plugins/Logger"));
+            }
+            Path path = Paths.get("./plugins/Logger/startups.txt");
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+            Files.write(path, ("Started up at time: " + datum).getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Check if config.json exist
         File configFile = new File("./plugins/Logger/config.json");
         if (!configFile.exists()) {
             plugin.getLogger().info("config.json doesn't exist, creating one..");
             try {
                 String defaultConfig = "{ \"host\": \"localhost\", \"port\": 3306, \"database\": \"servers_info\", \"username\": \"root\", \"password\": \"password\" }";
-                Files.createDirectories(Paths.get("./plugins/Logger"));
                 Files.writeString(Paths.get("./plugins/Logger/config.json"), defaultConfig);
             } catch (IOException e) {
                 System.err.println("Failed to create config file, error: " + e.getMessage());
-                return;
             }
         } else {
             // Load config.json
@@ -69,9 +86,6 @@ public class enable {
                         statement.execute("INSERT INTO `proxy` (`Last_Launch`, `Last_End`, `status`) VALUES ('0000-00-00 00:00:00', '0000-00-00 00:00:00', 0)");
                     }
                     // Updating last launch
-                    LocalDateTime currentDateTime = LocalDateTime.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String datum = currentDateTime.format(formatter);
                     statement.execute(String.format("UPDATE `proxy` SET `Last_Launch` = '%s'", datum));
                     statement.execute("UPDATE `proxy` SET `status` = 1");
                 } catch (SQLException e) {

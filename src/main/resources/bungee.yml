@@ -1,0 +1,4 @@
+name: Logger
+version: '${project.version}'
+main: logger.main
+description: Logging events to .log file and MySQL DB.
